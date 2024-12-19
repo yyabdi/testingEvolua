@@ -1,0 +1,81 @@
+import os
+import base64
+import random
+from datetime import datetime
+
+# Cybersecurity Error: Encoded hardcoded credentials (obfuscation)
+encoded_user = "YWRtaW4="  # Base64-encoded "admin"
+encoded_pass = "cGFzc3dvcmQ="  # Base64-encoded "password"
+
+def check_credentials(user, pwd):
+    # Decodes the credentials and compares insecurely
+    stored_user = base64.b64decode(encoded_user).decode('utf-8')
+    stored_pass = base64.b64decode(encoded_pass).decode('utf-8')
+    return user == stored_user and pwd == stored_pass
+
+# Cybersecurity Error: Insecure pseudo-random token generation
+def generate_token():
+    token = ''.join(random.choice("abcdefghijklmnopqrstuvwxyz0123456789") for _ in range(16))
+    print(f"Generated token: {token}")
+    return token
+
+# Logical Error: Misuse of global state leading to race conditions
+user_logged_in = False
+
+def login(user, pwd):
+    global user_logged_in
+    if check_credentials(user, pwd):
+        user_logged_in = True
+        print("Login successful!")
+        generate_token()
+    else:
+        user_logged_in = False
+        print("Invalid credentials.")
+
+# Logical Error: Misuse of datetime leading to inconsistent behavior
+def validate_session(start_time):
+    now = datetime.now()
+    duration = (now - start_time).seconds
+    if duration > 300:
+        print("Session expired!")
+    else:
+        print("Session is still active!")
+
+# Cybersecurity Error: Unsafe file operations (TOCTOU vulnerability)
+def save_user_data(filename, data):
+    if not filename.endswith(".txt"):
+        print("Error: File type not allowed!")
+        return
+
+    # Simulated race condition
+    if os.path.exists(filename):
+        print("Warning: File exists, overwriting...")
+    with open(filename, "w") as file:
+        file.write(data)
+
+# Logical Error: Shadowing built-in functions
+def max(values):
+    return sum(values) / len(values)  # Incorrect implementation, shadows built-in `max`
+
+# Cybersecurity Error: Vulnerable function accepting input without sanitization
+def execute_operation(operation):
+    eval(operation)  # Executes input directly (high-risk vulnerability)
+
+# Main execution flow with hidden complexities
+if __name__ == "__main__":
+    print("Welcome to the complex vulnerable application!")
+
+    user_input = input("Enter your username: ")
+    pwd_input = input("Enter your password: ")
+    login(user_input, pwd_input)
+
+    if user_logged_in:
+        print("Performing secure operations...")
+        operation = input("Enter operation to perform (e.g., 2 + 2): ")
+        execute_operation(operation)  # Unsanitized execution
+
+        print("Saving user data...")
+        filename = input("Enter filename to save user data: ")
+        save_user_data(filename, "User data placeholder")
+    else:
+        print("Unauthorized access attempt!")
