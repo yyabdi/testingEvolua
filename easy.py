@@ -3,6 +3,8 @@
 import os
 import hashlib
 
+#testing add a commit to pre committed code
+
 # Cybersecurity Error 1: Hardcoded credentials
 USERNAME = "admin"
 PASSWORD = "password123"
